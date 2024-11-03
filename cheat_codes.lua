@@ -11,7 +11,15 @@ event.register_handler(menu_event.ScriptsReloaded, function()
     cheat_controller_patch2:disable_patch()
 end)
 
-script.register_looped("CheatCodes", function()
-	globals.set_int(33197, 0) -- Disable all "IS_CHEAT_DISABLED" bits
-	globals.set_int(33199, 0) -- Bypass Achievement Disabler
+script.register_looped("Cheat Codes", function(sc)
+    globals.set_int(33197, 0) -- Disable all "IS_CHEAT_DISABLED" bits
+    globals.set_int(33199, 0) -- Bypass Achievement Disabler
+    if not script.is_active("cheat_controller") then
+        repeat
+            SCRIPT.REQUEST_SCRIPT("cheat_controller")
+            sc:yield()
+        until SCRIPT.HAS_SCRIPT_LOADED("cheat_controller")
+        SYSTEM.START_NEW_SCRIPT("cheat_controller", 1424)
+        SCRIPT.SET_SCRIPT_AS_NO_LONGER_NEEDED("cheat_controller")
+    end
 end)
