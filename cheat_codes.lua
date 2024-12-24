@@ -6,6 +6,19 @@ cheat_handler_patch:apply()
 cheat_controller_patch1 = scr_patch:new("cheat_controller", "ACCIMP1", "71 2C 04 00 8A", 0, {0x2E, 0x00, 0x00})
 cheat_controller_patch2 = scr_patch:new("freemode", "ACCIMP2", "59 09 00 64 56 C0 05", 0, {0x55})
 
+local function ENSURE_CHEAT_CONTROLLER_IS_RUNNING(sc)
+    globals.set_int(33336, 0) -- Disable all "IS_CHEAT_DISABLED" bits
+    globals.set_int(33338, 0) -- Bypass Achievement Disabler
+    if not script.is_active("cheat_controller") then
+        repeat
+            SCRIPT.REQUEST_SCRIPT("cheat_controller")
+            sc:yield()
+        until SCRIPT.HAS_SCRIPT_LOADED("cheat_controller")
+        SYSTEM.START_NEW_SCRIPT("cheat_controller", 1424)
+        SCRIPT.SET_SCRIPT_AS_NO_LONGER_NEEDED("cheat_controller")
+    end
+end
+
 -- Put your custom cheats into the main loop using this function.
 -- cheat_code (string): The cheat code of your custom cheat.
 -- callback (function): Function to be executed for your custom cheat.
